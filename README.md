@@ -39,11 +39,10 @@
 - npm run sync-dotenv-slack
   - 이걸 실행하면 slack으로 변경사항이 넘어간다.
 - 하지만 husky를 통한 설정 덕분에 push 할 때마다 자동으로 넘어갈 것이다.
-  -
 
 ### Run
 
-0. 백장에게 .env파일을 전달받는다.
+0. 백장에게 .env파일을 전달받는다. (혹은 slack에서 최신 내용을 복붙한다.)
 
 1. MongoDB를 켠다.
 
@@ -52,6 +51,7 @@
 2. npm i
 
 - node_module을 다운받는 구문이다.
+- 패키지 다운로드를 최신화한다.
 
 3. npm run dev
 
