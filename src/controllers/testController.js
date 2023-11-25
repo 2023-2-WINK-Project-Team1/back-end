@@ -25,14 +25,23 @@ export const createTest = async (req, res) => {
 export const updateTest = async (req, res) => {
   const { title, text } = req.body;
 
-  await Test.updateOne({ title }, { text });
-  return res.status(200).send("update success");
+  try {
+    await Test.updateOne({ title }, { text });
+    return res.status(200).send("update success");
+  } catch (e) {
+    console.log(e);
+    return res.status(400).send("title not found");
+  }
 };
 
 // DELETE
 export const deleteTest = async (req, res) => {
   const id = req.body.id;
-  await Test.findByIdAndDelete(id);
-
-  return res.status(200).send("delete success");
+  try {
+    await Test.findByIdAndDelete(id);
+    return res.status(200).send("delete success");
+  } catch (e) {
+    console.log(e);
+    return res.status(400).send("id not found");
+  }
 };

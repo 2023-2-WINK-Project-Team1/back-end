@@ -4,7 +4,20 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --exec babel-node src/init.js"
+    "dev": "nodemon --exec babel-node src/init.js",
+    "sync-dotenv-slack": "envbot"
+  },
+  "envbot": {
+    "channel": "back-end-dotenv",
+    "include": [
+      "*",
+      "!SECRET"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "npm run sync-dotenv-slack"
+    }
   },
   "repository": {
     "type": "git",
@@ -25,6 +38,7 @@
     "@babel/core": "^7.23.3",
     "@babel/node": "^7.22.19",
     "@babel/preset-env": "^7.23.3",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "sync-dotenv-slack": "^0.1.0"
   }
 }
