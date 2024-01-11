@@ -3,7 +3,7 @@ import {
     getUserProfile,
     getUserNotifications,
     updateUserNotificationSetting,
-} from '../controllers/UserController';
+} from '../controllers/userController';
 
 // BASEURL/student로 들어오는 요청을 전담한다.
 const userRouter = express.Router();

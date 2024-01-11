@@ -1,4 +1,4 @@
-import User from "../models/User";
+import user from "../models/user";
 
 // READ
 
@@ -8,7 +8,7 @@ export const getUserProfile = async (req, res) => {
 
     try {
         // 사용자 ID를 기반으로 데이터베이스에서 사용자 프로필을 조회합니다.
-        const userProfile = await User.findById(userId);
+        const userProfile = await user.findById(userId);
 
         if (!userProfile) {
             return res.status(404).send("사용자를 찾을 수 없습니다.");
@@ -28,7 +28,7 @@ export const getUserNotifications = async (req, res) => {
 
     try {
         // 사용자 ID를 기반으로 데이터베이스에서 사용자 알림을 조회합니다.
-        const userNotifications = await User.findById(userId, 'notification');
+        const userNotifications = await user.findById(userId, 'notification');
 
         if (!userNotifications) {
             return res.status(404).send("사용자를 찾을 수 없습니다.");
@@ -53,7 +53,7 @@ export const updateUserNotificationSetting = async (req, res) => {
 
     try {
         // 사용자 ID를 기반으로 데이터베이스에서 해당 사용자를 찾습니다.
-        const user = await User.findById(userId);
+        const user = await user.findById(userId);
 
         if (!user) {
             return res.status(404).send("사용자를 찾을 수 없습니다.");
