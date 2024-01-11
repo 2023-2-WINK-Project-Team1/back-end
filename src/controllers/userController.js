@@ -53,19 +53,19 @@ export const updateUserNotificationSetting = async (req, res) => {
 
     try {
         // 사용자 ID를 기반으로 데이터베이스에서 해당 사용자를 찾습니다.
-        const user = await user.findById(userId);
+        const User = await user.findById(userId);
 
-        if (!user) {
+        if (!User) {
             return res.status(404).send("사용자를 찾을 수 없습니다.");
         }
 
         // 사용자의 알림 설정을 업데이트합니다.
-        user.notification = notificationSetting;
+        User.notification = notificationSetting;
         // 주의 표시는 mongodb 파일에 안불러와서 생깁니다.
-        await user.save();
+        await User.save();
 
         // 업데이트된 알림 설정을 클라이언트에게 응답합니다.
-        return res.status(200).json({ notification: user.notification });
+        return res.status(200).json({ notification: User.notification });
     } catch (error) {
         console.error(error);
         return res.status(500).send("서버 오류 발생");
