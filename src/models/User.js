@@ -10,6 +10,6 @@ const userSchema = new mongoose.Schema({
     is_manager : { type: Boolean, default: false }
 });
 
-const user = mongoose.model("user", userSchema);
+const User = mongoose.model("User", userSchema);
 
-export default user;
+export default User;

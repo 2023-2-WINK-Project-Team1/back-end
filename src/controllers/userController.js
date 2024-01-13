@@ -1,14 +1,15 @@
-import user from "../models/user";
+import User from "../models/User";
 
 // READ
 
 // 프로필 조회
 export const getUserProfile = async (req, res) => {
+
     const userId = req.params.userId;
 
     try {
         // 사용자 ID를 기반으로 데이터베이스에서 사용자 프로필을 조회합니다.
-        const userProfile = await user.findById(userId);
+        const userProfile = await User.findById(userId);
 
         if (!userProfile) {
             return res.status(404).send("사용자를 찾을 수 없습니다.");
@@ -28,7 +29,7 @@ export const getUserNotifications = async (req, res) => {
 
     try {
         // 사용자 ID를 기반으로 데이터베이스에서 사용자 알림을 조회합니다.
-        const userNotifications = await user.findById(userId, 'notification');
+        const userNotifications = await User.findById(userId, 'notification');
 
         if (!userNotifications) {
             return res.status(404).send("사용자를 찾을 수 없습니다.");
@@ -49,23 +50,23 @@ export const getUserNotifications = async (req, res) => {
 // 알림 설정 업데이트
 export const updateUserNotificationSetting = async (req, res) => {
     const userId = req.params.userId;
-    const { notificationSetting } = req.body;
+    const { notification } = req.body;
 
     try {
         // 사용자 ID를 기반으로 데이터베이스에서 해당 사용자를 찾습니다.
-        const User = await user.findById(userId);
+        const user = await User.findById(userId);
 
-        if (!User) {
+        if (!user) {
             return res.status(404).send("사용자를 찾을 수 없습니다.");
         }
 
         // 사용자의 알림 설정을 업데이트합니다.
-        User.notification = notificationSetting;
+        user.notification = notification;
         // 주의 표시는 mongodb 파일에 안불러와서 생깁니다.
-        await User.save();
+        await user.save();
 
         // 업데이트된 알림 설정을 클라이언트에게 응답합니다.
-        return res.status(200).json({ notification: User.notification });
+        return res.status(200).json({ notification: user.notification });
     } catch (error) {
         console.error(error);
         return res.status(500).send("서버 오류 발생");
