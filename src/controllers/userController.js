@@ -4,6 +4,7 @@ import User from "../models/User";
 
 // 프로필 조회
 export const getUserProfile = async (req, res) => {
+
     const userId = req.params.userId;
 
     try {
@@ -49,7 +50,7 @@ export const getUserNotifications = async (req, res) => {
 // 알림 설정 업데이트
 export const updateUserNotificationSetting = async (req, res) => {
     const userId = req.params.userId;
-    const { notificationSetting } = req.body;
+    const { notification } = req.body;
 
     try {
         // 사용자 ID를 기반으로 데이터베이스에서 해당 사용자를 찾습니다.
@@ -60,7 +61,7 @@ export const updateUserNotificationSetting = async (req, res) => {
         }
 
         // 사용자의 알림 설정을 업데이트합니다.
-        user.notification = notificationSetting;
+        user.notification = notification;
         // 주의 표시는 mongodb 파일에 안불러와서 생깁니다.
         await user.save();
 
