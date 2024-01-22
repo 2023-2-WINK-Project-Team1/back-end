@@ -20,12 +20,12 @@ rentalRouter.get("/:user_id", getUserRentals);
 rentalRouter.post("/", createRentalRequest);
 
 // 사용자 대여 신청 승인 (관리자)
-rentalRouter.patch("/:rental_history_id", approveRentalRequest);
+rentalRouter.post("/approve/:rental_history_id", approveRentalRequest);
 
 // 사용자 대여 신청 취소
 rentalRouter.delete("/", cancelRentalRequest);
 
 // 관리자 반납 완료 처리
-rentalRouter.patch("/:rental_history_id", completeReturn);
+rentalRouter.post("/return-approve/:rental_history_id", completeReturn);
 
 export default rentalRouter;

@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const userSchema = new mongoose.Schema({
   // add schema
     //_id: { type: String, required: true }, id 제거
+    name : { type: String, required: true },
     user_number: { type: String, required: true },
     email: { type: String, required: true },
     password: { type: String, required: true },
