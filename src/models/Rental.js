@@ -13,11 +13,7 @@ const rentalSchema = new mongoose.Schema({
         ref: "Item.product_name", // "Item" 모델의 "product_name" 필드를 참조
         required: true
     },
-    count: {
-        type: String, // 또는 다른 적절한 타입으로 변경
-        ref: "Item.count", // "Item" 모델의 "count" 필드를 참조
-        required: true
-    },
+    count: {type: String, required: true },// 또는 다른 적절한 타입으로 변경
     approved: { type: Date },  // 승인 날짜, 선택적 필드
     approved_manager: { type: String },  // 승인 매니저 이름 또는 ID 등의 정보, 선택적 필드
     returned: { type: Boolean, default: false },  // 반납 여부, 기본값은 false
