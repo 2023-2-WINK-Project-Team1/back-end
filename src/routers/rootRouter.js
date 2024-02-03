@@ -1,5 +1,11 @@
 import express from "express";
-import { email_auth, join, login } from "../controllers/userController";
+import {
+  authUser,
+  email_auth,
+  join,
+  login,
+  logout,
+} from "../controllers/userController";
 import { check_is_member } from "../controllers/memberController";
 
 // BASEURL/student로 들어오는 요청을 전담한다.
@@ -11,6 +17,9 @@ rootRouter.post("/join", join);
 
 // 로그인
 rootRouter.post("/login", login);
+
+// 로그아웃
+rootRouter.get("/logout", authUser, logout);
 
 // 이메일 인증
 rootRouter.post("/email_auth", email_auth);

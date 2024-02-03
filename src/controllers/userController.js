@@ -2,6 +2,7 @@ import User from "../models/User";
 import nodemailer from "nodemailer";
 import ejs from "ejs";
 import crypto from "crypto";
+import { check_is_member } from "./memberController";
 
 let email_auth_key_dict = {};
 
@@ -94,10 +95,10 @@ export const join = async (req, res) => {
   console.log(email);
   // console.log(req.body);
   // 인증번호 확인
-  // if (email_auth_key_dict[email] != code) {
-  //   console.log(email_auth_key_dict[email]);
-  //   return res.status(400).send("인증번호가 일치하지 않습니다.");
-  // }
+  if (email_auth_key_dict[email] != code) {
+    console.log(email_auth_key_dict[email]);
+    return res.status(400).send("인증번호가 일치하지 않습니다.");
+  }
 
   // 비밀번호 확인
   if (password !== password2) {
@@ -110,12 +111,19 @@ export const join = async (req, res) => {
     return res.status(400).send("이미 가입한 학번/이메일 입니다.");
   }
 
+  // 학생회비 납부여부 확인
+  const { is_member, is_manager } = await check_is_member(user_number, name);
+  // console.log(is_member);
+  if (!is_member) {
+    return res.status(400).send("학생회비 납부자가 아닙니다.");
+  }
   try {
     await User.create({
       user_number,
       name,
       email,
       password,
+      is_manager,
     });
     return res.status(200).send("회원가입 성공");
   } catch (e) {
@@ -136,21 +144,29 @@ export const login = async (req, res) => {
     return res.status(400).send("존재하지 않는 계정입니다.");
   }
   user.comparePassword(password, (err, isMatch) => {
+    // console.log(isMatch);
     if (!isMatch) {
       return res.status(400).send("잘못된 비밀번호 입니다.");
     }
   });
+
   user.generateToken((err, user) => {
     if (err) return res.status(400).send(err);
     // 토큰을 저장한다. 어디에? 쿠키, 로컬스토리지, 세션 등등
-    return res
-      .cookie("x_auth", user.token)
-      .status(200)
-      .json({ loginSuccess: true, userId: user._id })
-      .send("로그인 성공");
+    return res.cookie("x_auth", user.token).status(200).send("로그인 성공");
   });
-  // return res.status(200).send("로그인 성공");
-  // if (req.session)
+};
+
+export const logout = async (req, res, next) => {
+  const { id } = req.body;
+  console.log(id);
+  await User.findOneAndUpdate({ _id: id }, { token: "" }).then((err, user) => {
+    if (err) return res.json({ success: false, err });
+    return res.status(200).send({
+      success: true,
+      logout: "로그아웃 완료",
+    });
+  });
 };
 
 // 사용자 인증 처리
