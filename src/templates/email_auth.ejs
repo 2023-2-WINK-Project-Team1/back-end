@@ -1,0 +1,79 @@
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>빌릴게 - 회원가입 확인 이메일</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        .message {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .confirmation-code {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4CAF50;
+            margin-top: 10px;
+        }
+
+        a {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a>[ WINK X CONNECT ]</a>
+        <a>학생회 복지물품 대여 서비스</a>
+        <h1>「 빌릴게 」</h1>
+        <div class="message">
+            서비스에 가입해주셔서 감사합니다.
+        </div>
+        <div class="message">
+            해당 메일은 <%= email %>이 정확한 이메일 주소인지 확인하는 메일입니다.
+        </div>
+        <div class="confirmation-code">
+            인증코드는 [ <%= code %> ] 입니다.
+        </div>
+        <div class="message">
+            인증코드의 유효시간은 10분입니다.
+        </div>
+    </div>
+</body>
+
+</html>
