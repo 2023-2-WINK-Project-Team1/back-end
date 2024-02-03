@@ -178,10 +178,8 @@ export const authManager = (req, res, next) => {
   User.findByToken(token, (err, user) => {
     if (err) throw err;
     if (!user) {
-      return res
-        .status(400)
-        .json({ isAuth: false, error: true })
-        .send("사용자 인증 실패");
+      return res.status(400).send("사용자 인증 실패, 로그인이 필요합니다.");
+      // .json({ isAuth: false, error: true })
     }
 
     // console.log(user);

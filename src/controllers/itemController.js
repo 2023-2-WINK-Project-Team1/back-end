@@ -80,10 +80,15 @@ export const deleteItem = async (req, res) => {
 
 // 상품 추가하기
 export const addItem = async (req, res) => {
-  // console.log(req.body);
+  const allowedTypes = ["expandable", "rental"];
+  console.log(req.body);
 
   const { product_name, type, count, filename } = req.body;
-
+  if (!allowedTypes.includes(type)) {
+    return res
+      .status(400)
+      .send("type 속성은 'expandable', 'rental' 중 하나여야합니다.");
+  }
   try {
     await Item.create({ product_name, type, count, filename });
     return res.status(200).send("상품 추가 완료");
