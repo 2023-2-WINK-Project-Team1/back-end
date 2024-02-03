@@ -6,10 +6,10 @@ import {
   authUser,
 } from "../controllers/userController";
 
-// BASEURL/student로 들어오는 요청을 전담한다.
+// BASEURL/user로 들어오는 요청을 전담한다.
 const userRouter = express.Router();
 
-// 따라서, 이 파일에서 루트 ( = "/") 가 의미하는 경로는 BASEURL/student가 된다.
+// 따라서, 이 파일에서 루트 ( = "/") 가 의미하는 경로는 BASEURL/user가 된다.
 
 // 프로필 조회
 userRouter.get("/:userId", authUser, getUserProfile);
