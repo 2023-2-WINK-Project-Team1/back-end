@@ -3,6 +3,7 @@ import "./db";
 import "./models/Item";
 import "./models/User";
 import "./models/test";
+import "./models/Rental";
 import app from "./server";
 
 // add js file
