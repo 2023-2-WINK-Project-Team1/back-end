@@ -30,8 +30,8 @@ async function readCSVFile(filePath) {
   }
 }
 
-export const check_is_member = async (req, res) => {
-  const { user_number, name } = req.body;
+export const check_is_member = async (user_number, name) => {
+  // const { user_number, name } = req.body;
   console.log(user_number, name);
 
   const csvFilePath = __dirname + "/../resources/refined_data.csv";
@@ -41,12 +41,12 @@ export const check_is_member = async (req, res) => {
     console.log("데이터 불러오기 성공");
     // console.log(memberData);
   } else {
-    // console.log("데이터 불러오기 실패");
-    return res.status(500).json({ message: "데이터를 불러오기 실패" });
+    console.log("데이터 불러오기 실패");
+    return false;
   }
 
   const targetYear = user_number.substring(0, 4);
-  console.log(targetYear);
+  // console.log(targetYear);
 
   const keys = Object.keys(memberData[0]);
 
@@ -55,10 +55,15 @@ export const check_is_member = async (req, res) => {
     (item) => item[keys[0]] == targetYear && item[keys[1]] === name
   );
 
-  console.log(typeof matchingData, matchingData.length);
+  // console.log(typeof matchingData, matchingData.length);
+  // console.log(matchingData[0]["복지부"]);
   if (matchingData.length) {
-    return res.status(200).json({ message: "학생회비 납부자 입니다." });
+    // return res.status(200).json({ message: "학생회비 납부자 입니다." });
+    console.log("학생회비 납부자 입니다.");
+    return { is_member: true, is_manager: matchingData[0]["복지부"] };
   } else {
-    return res.status(400).json({ message: "학생회비 납부자가 아닙니다." });
+    // return res.status(400).json({ message: "학생회비 납부자가 아닙니다." });
+    console.log("학생회비 납부자가 아닙니다.");
+    return { is_member: false, is_manager: matchingData[0]["복지부"] };
   }
 };
