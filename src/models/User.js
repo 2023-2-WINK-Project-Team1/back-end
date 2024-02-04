@@ -11,14 +11,18 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   notification: { type: Boolean, default: true },
   is_manager: { type: Boolean, default: false },
-  token: { type: String, default: false },
+  token: { type: String },
 });
 
 userSchema.pre("save", async function () {
-  this.password = await bcrypt.hash(this.password, 5);
+  console.log("call this");
+  if (this.isModified("password")) {
+    this.password = await bcrypt.hash(this.password, 5);
+  }
 });
 
 userSchema.methods.comparePassword = function (plainPassword, cb) {
+  console.log(plainPassword);
   bcrypt.compare(plainPassword, this.password, function (err, isMatch) {
     if (err) return cb(err);
     cb(null, isMatch);
@@ -47,7 +51,7 @@ userSchema.statics.findByToken = async function (token, cb) {
     // console.log(decoded);
     const user = await User.findOne({ _id: decoded, token: token });
     if (!user) {
-      return cb(err);
+      cb(err, null);
     }
     cb(null, user);
   });

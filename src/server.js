@@ -20,12 +20,9 @@ app.get("/", (req, res) => {
 });
 
 // BASEURL/user로 들어온 요청은 userRouter로 전달한다.
+app.use("/", rootRouter);
 app.use("/user", userRouter);
 app.use("/rental", rentalRouter);
-app.use("/", rootRouter);
-
-// BASEURL/User로 들어온 요청은 UserRouter로 전달한다.
-app.use("/user", userRouter);
 app.use("/test", testRouter);
 app.use("/items", itemRouter);
 
