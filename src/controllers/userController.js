@@ -160,11 +160,12 @@ export const login = async (req, res) => {
 export const logout = async (req, res, next) => {
   const { id } = req.body;
   console.log(id);
-  await User.findOneAndUpdate({ _id: id }, { token: "" }).then((err, user) => {
+  await User.findOneAndUpdate({ _id: id }, { token: "" }).then((user, err) => {
     if (err) return res.json({ success: false, err });
     return res.status(200).send({
       success: true,
       logout: "로그아웃 완료",
+      user,
     });
   });
 };
