@@ -57,13 +57,15 @@ export const check_is_member = async (user_number, name) => {
 
   // console.log(typeof matchingData, matchingData.length);
   // console.log(matchingData[0]["복지부"]);
+
+  const is_manager = matchingData[0]["복지부"] ? true : false;
   if (matchingData.length) {
     // return res.status(200).json({ message: "학생회비 납부자 입니다." });
     console.log("학생회비 납부자 입니다.");
-    return { is_member: true, is_manager: matchingData[0]["복지부"] };
+    return { is_member: true, is_manager };
   } else {
     // return res.status(400).json({ message: "학생회비 납부자가 아닙니다." });
     console.log("학생회비 납부자가 아닙니다.");
-    return { is_member: false, is_manager: matchingData[0]["복지부"] };
+    return { is_member: false, is_manager };
   }
 };

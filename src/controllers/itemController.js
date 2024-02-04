@@ -33,7 +33,9 @@ export const getItemImage = async (req, res) => {
 
     return res
       .status(200)
-      .sendFile(path.resolve(`src/resources/images/${item.filename}`));
+      .sendFile(
+        path.resolve(__dirname + `/../resources/images/${item.filename}`)
+      );
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
@@ -69,7 +71,7 @@ export const deleteItem = async (req, res) => {
   try {
     const { filename } = await Item.findById(id);
     // 이미지 삭제
-    fs.unlinkSync(path.resolve(`src/resources/images/${filename}`));
+    fs.unlinkSync(path.resolve(__dirname + `/../resources/images/${filename}`));
     // db에서 데이터 삭제
     await Item.findByIdAndDelete(id);
     return res.status(200).send("상품 삭제 완료");
