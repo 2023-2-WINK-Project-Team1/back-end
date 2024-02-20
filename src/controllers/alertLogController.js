@@ -12,8 +12,11 @@ export const getAlertLogsByUserId = async (req, res) => {
         const user = await User.findById(user_id);
 
         if (!user) {
-            throw new Error('사용자를 찾을 수 없습니다.');
+            return res
+                .status(400)
+                .send("사용자 id를 올바르게 입력해주세요");
         }
+
 
         const data = await AlertLog.find({ alert_user: user.name })
 
