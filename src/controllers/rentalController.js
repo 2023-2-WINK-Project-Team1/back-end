@@ -1,5 +1,7 @@
 import Rental from "../models/Rental";
 import User from "../models/User";
+import { createAlertLog } from "./alertLogController";
+import Item from "../models/Item";
 
 // READ: 모든 대여 내역 조회 (관리자 승인)
 export const getAllRentals = async (req, res) => {
@@ -32,6 +34,9 @@ export const getUserRentals = async (req, res) => {
 export const createRental = async (req, res) => {
   const { item_id, count, user_id } = req.body;
 
+  const user = await User.findById(user_id);
+  const item = await Item.findById(item_id);
+
   try {
     // Validation
     if (!item_id || !count || !user_id) {
@@ -43,6 +48,12 @@ export const createRental = async (req, res) => {
       item: item_id,
       count,
     });
+
+    // 생성할 알림 로그의 메시지를 생성합니다.
+    const message = `${user.name}님이 ${item.product_name}을(를) 대여 신청하였습니다.`;
+    console.log(message);
+    // 이벤트 발생
+    await createAlertLog(user.name,message);
 
     // Success Response
     return res.status(200).send("사용자 대여 신청 성공");
@@ -62,11 +73,19 @@ export const approveRental = async (req, res) => {
     if (!rental_id || !manager_id) {
       return res.status(400).send("모든 필수 입력값을 제공해야 합니다.");
     }
-
+    const rental = await Rental.findById(rental_id);
+    const user = await User.findById(rental.create_user);
+    const item = await Item.findById(rental.item);
     await Rental.findByIdAndUpdate(rental_id, {
       approved_manager: manager_id,
       approved: new Date(),
     });
+
+    // 생성할 알림 로그의 메시지를 생성합니다.
+    const message = `관리자가 ${item.product_name}을(를) 대여신청을 승인하였습니다.`;
+    // 이벤트 발생
+    await createAlertLog(user.name, message);
+
     return res.status(200).send("사용자 대여 신청이 성공적으로 승인되었습니다");
   } catch (error) {
     console.log(error);
@@ -106,6 +125,9 @@ export const cancelRental = async (req, res) => {
 export const returnRental = async (req, res) => {
   const { rental_id } = req.params;
   const { manager_id } = req.body;
+  const rental = await Rental.findById(rental_id);
+  const user = await User.findById(rental.create_user);
+  const item = await Item.findById(rental.item);
 
   try {
     if (!rental_id || !manager_id) {
@@ -117,6 +139,11 @@ export const returnRental = async (req, res) => {
       return_check_manager: manager_id,
       returned: new Date(),
     });
+
+    // 생성할 알림 로그의 메시지를 생성합니다.
+    const message = `${item.product_name}의 반납이 성공적으로 완료되었습니다`;
+    // 이벤트 발생
+    await createAlertLog(user.name, message);
 
     return res.status(200).send("반납이 성공적으로 완료되었습니다");
   } catch (error) {
