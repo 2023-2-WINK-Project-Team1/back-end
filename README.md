@@ -60,3 +60,19 @@
 3. npm run dev
 
 - 백엔드 서버를 실행하는 구문이다.
+
+### Deployment
+
+#### Server
+
+- cloudtype.io로 배포
+- 백엔드장 계정 사용 (winney916@gmail.com)
+
+#### DB
+
+- mongodb atlas로 배포
+- 백엔드장 계정 사용 (winney916@gmail.com)
+
+#### 배포시 주의사항
+
+- build 폴더에 /templates, /resources 추가해야함 (csv파일 포함)

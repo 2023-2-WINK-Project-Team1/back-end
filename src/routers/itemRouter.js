@@ -13,6 +13,16 @@ import { authManager } from "../controllers/userController";
 
 const router = express.Router();
 
+// 이미지 제목 생성을 위한 함수
+function generateCurrentTimestamp() {
+  const currentDate = new Date();
+  const timestamp = currentDate
+    .toISOString()
+    .replace(/[-T:]/g, "")
+    .split(".")[0];
+  return timestamp;
+}
+
 // 이미지 파일 저장 위치 및 파일 이름 설정
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -21,14 +31,16 @@ const storage = multer.diskStorage({
   filename: function (req, file, cb) {
     // console.log(file.originalname);
     // console.log(file.mimetype);
-    // 이미지 파일의 이름을 product_name.기존확장자 로 설정한다.
-    const { product_name } = req.body;
-    const filename = product_name + path.extname(file.originalname);
+    // 이미지 파일의 이름을 product_name.기존확장자 로 설정한다. -> 한글이 깨짐
+    // 이미지 파일의 이름을 현재시간을 기준으로 만든다.
+    const currentTimestamp = generateCurrentTimestamp();
+    const filename = currentTimestamp + path.extname(file.originalname);
 
     req.body.filename = filename;
     cb(null, filename);
   },
 });
+
 const upload = multer({
   storage,
   fileFilter: function (req, file, cb) {
