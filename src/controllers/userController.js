@@ -143,8 +143,8 @@ export const login = async (req, res) => {
   if (!user) {
     return res.status(400).send("존재하지 않는 계정입니다.");
   }
-  user.comparePassword(password, (err, isMatch) => {
-    // console.log(isMatch);
+  await user.comparePassword(password, (err, isMatch) => {
+    console.log(isMatch);
     if (!isMatch) {
       return res.status(400).send("잘못된 비밀번호 입니다.");
     }
@@ -160,11 +160,12 @@ export const login = async (req, res) => {
 export const logout = async (req, res, next) => {
   const { id } = req.body;
   console.log(id);
-  await User.findOneAndUpdate({ _id: id }, { token: "" }).then((err, user) => {
+  await User.findOneAndUpdate({ _id: id }, { token: "" }).then((user, err) => {
     if (err) return res.json({ success: false, err });
     return res.status(200).send({
       success: true,
       logout: "로그아웃 완료",
+      user,
     });
   });
 };
@@ -172,9 +173,10 @@ export const logout = async (req, res, next) => {
 // 사용자 인증 처리
 export const authUser = (req, res, next) => {
   const token = req.cookies.x_auth;
-
+  // console.log(token);
   User.findByToken(token, (err, user) => {
-    if (err) throw err;
+    // console.log(err, user);
+    // if (err) throw err;
     if (!user)
       return res.json({ isAuth: false, error: true }).send("사용자 인증 실패");
 

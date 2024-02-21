@@ -6,13 +6,14 @@ import bodyParser from "body-parser";
 import rentalRouter from "./routers/rentalRouter";
 import cookieParser from "cookie-parser";
 import rootRouter from "./routers/rootRouter";
-
+import cors from "cors";
 const app = express();
 
 // set bodyParser
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use(cors());
 
 app.get("/", (req, res) => {
   console.log("home");
@@ -20,12 +21,9 @@ app.get("/", (req, res) => {
 });
 
 // BASEURL/user로 들어온 요청은 userRouter로 전달한다.
+app.use("/", rootRouter);
 app.use("/user", userRouter);
 app.use("/rental", rentalRouter);
-app.use("/", rootRouter);
-
-// BASEURL/User로 들어온 요청은 UserRouter로 전달한다.
-app.use("/user", userRouter);
 app.use("/test", testRouter);
 app.use("/items", itemRouter);
 
