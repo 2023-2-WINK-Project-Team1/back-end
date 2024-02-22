@@ -183,7 +183,7 @@ export const authUser = (req, res, next) => {
     // if (err) throw err;
     if (!user) {
       // console.log("not found user");
-      return res.status(400).send("사용자 인증 실패");
+      return res.status(400).send("사용자 인증 실패, 로그인이 필요합니다.");
     } else {
       // 토큰 인증 성공시 다음 진행
       req.token = token;
