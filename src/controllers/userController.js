@@ -174,7 +174,7 @@ export const logout = async (req, res, next) => {
 
 // 사용자 인증 처리
 export const authUser = (req, res, next) => {
-  console.log();
+  console.log(req.get("Authorization"));
   const token = req.get("Authorization");
   console.log(token);
   // console.log(User.findByToken(token));
@@ -197,7 +197,7 @@ export const authUser = (req, res, next) => {
 export const authManager = (req, res, next) => {
   // console.log("start authManager");
   console.log(req);
-  const token = req.Authorization.x_auth;
+  const token = req.get("Authorization");
   console.log(token);
   User.findByToken(token, (err, user) => {
     if (err) throw err;
