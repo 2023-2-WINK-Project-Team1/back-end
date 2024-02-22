@@ -156,7 +156,7 @@ export const login = async (req, res) => {
     if (err) return res.status(400).send(err);
     // 토큰을 저장한다. 어디에? 쿠키, 로컬스토리지, 세션 등등
     console.log("token");
-    return res.cookie("x_auth", user.token).status(200).send("로그인 성공");
+    return res.status(200).send({ success: true, x_auth: user.token });
   });
 };
 
