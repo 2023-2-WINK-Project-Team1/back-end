@@ -196,7 +196,7 @@ export const authUser = (req, res, next) => {
 // 관리자 인증 처리
 export const authManager = (req, res, next) => {
   // console.log("start authManager");
-  console.log(req);
+  // console.log(req);
   const token = req.get("Authorization");
   console.log(token);
   User.findByToken(token, (err, user) => {

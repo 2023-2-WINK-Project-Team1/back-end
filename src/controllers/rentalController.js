@@ -5,6 +5,7 @@ import User from "../models/User";
 export const getAllRentals = async (req, res) => {
   try {
     const data = await Rental.find({});
+
     return res.status(200).send(data);
   } catch (error) {
     console.log(error);
