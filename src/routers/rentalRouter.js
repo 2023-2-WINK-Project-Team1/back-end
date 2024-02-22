@@ -12,7 +12,7 @@ import { authManager, authUser } from "../controllers/userController";
 const rentalRouter = express.Router();
 
 // 전체 대여 내역 조회 (관리자 승인을 위한)
-rentalRouter.get("/", authManager, getAllRentals);
+rentalRouter.get("/all", authManager, getAllRentals);
 
 // 사용자 대여 내역 조회
 rentalRouter.get("/", authUser, getUserRentals);
