@@ -156,19 +156,18 @@ export const login = async (req, res) => {
     if (err) return res.status(400).send(err);
     // 토큰을 저장한다. 어디에? 쿠키, 로컬스토리지, 세션 등등
     console.log("token");
-    return res.status(200).send({ success: true, x_auth: user.token });
+    return res.status(200).send({ success: true, user });
   });
 };
 
 export const logout = async (req, res, next) => {
-  const { id } = req.body;
-  console.log(id);
+  console.log("call logout");
+  const { id } = req.user;
   await User.findOneAndUpdate({ _id: id }, { token: "" }).then((user, err) => {
     if (err) return res.json({ success: false, err });
     return res.status(200).send({
       success: true,
       logout: "로그아웃 완료",
-      user,
     });
   });
 };
@@ -176,17 +175,20 @@ export const logout = async (req, res, next) => {
 // 사용자 인증 처리
 export const authUser = (req, res, next) => {
   const token = req.cookies.x_auth;
-  // console.log(token);
+  console.log(token);
+  // console.log(User.findByToken(token));
   User.findByToken(token, (err, user) => {
     // console.log(err, user);
     // if (err) throw err;
-    if (!user)
-      return res.json({ isAuth: false, error: true }).send("사용자 인증 실패");
-
-    // 토큰 인증 성공시 다음 진행
-    req.token = token;
-    req.user = user;
-    next();
+    if (!user) {
+      // console.log("not found user");
+      return res.status(400).send("사용자 인증 실패");
+    } else {
+      // 토큰 인증 성공시 다음 진행
+      req.token = token;
+      req.user = user;
+      next();
+    }
   });
 };
 
