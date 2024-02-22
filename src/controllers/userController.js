@@ -135,24 +135,27 @@ export const join = async (req, res) => {
 // 로그인
 export const login = async (req, res) => {
   const { user_number, password } = req.body;
-  // console.log(user_number, password);
+  console.log(user_number, password);
 
   const user = await User.findOne({ user_number });
-  // console.log(user);
 
   if (!user) {
     return res.status(400).send("존재하지 않는 계정입니다.");
   }
+
   await user.comparePassword(password, (err, isMatch) => {
     console.log(isMatch);
     if (!isMatch) {
       return res.status(400).send("잘못된 비밀번호 입니다.");
     }
+    console.log("compare");
   });
 
-  user.generateToken((err, user) => {
+  await user.generateToken((err, user) => {
+    // console.log(err, user);
     if (err) return res.status(400).send(err);
     // 토큰을 저장한다. 어디에? 쿠키, 로컬스토리지, 세션 등등
+    console.log("token");
     return res.cookie("x_auth", user.token).status(200).send("로그인 성공");
   });
 };
