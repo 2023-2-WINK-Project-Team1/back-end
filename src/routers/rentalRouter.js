@@ -15,7 +15,7 @@ const rentalRouter = express.Router();
 rentalRouter.get("/", authManager, getAllRentals);
 
 // 사용자 대여 내역 조회
-rentalRouter.get("/:user_id", authUser, getUserRentals);
+rentalRouter.get("/", authUser, getUserRentals);
 
 // 사용자 대여 신청
 rentalRouter.post("/", authUser, createRental);
@@ -24,7 +24,7 @@ rentalRouter.post("/", authUser, createRental);
 rentalRouter.post("/approve/:rental_id", authManager, approveRental);
 
 // 사용자 대여 신청 취소
-rentalRouter.delete("/", authUser, cancelRental);
+rentalRouter.delete("/:rental_id", authUser, cancelRental);
 
 // 관리자 반납 완료 처리
 rentalRouter.post("/return/:rental_id", authManager, returnRental);

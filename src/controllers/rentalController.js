@@ -14,11 +14,10 @@ export const getAllRentals = async (req, res) => {
 
 // READ: 사용자 대여 내역 조회
 export const getUserRentals = async (req, res) => {
-  const { user_id } = req.params;
   try {
-    const user = await User.findById(user_id);
+    const user = req.user;
     if (!user) {
-      return res.status(404).send("사용자를 찾을 수 없습니다.");
+      return res.status(401).send("사용자를 찾을 수 없습니다.");
     }
     const data = await Rental.find({ create_user: user._id });
     return res.status(200).send(data);
@@ -30,8 +29,9 @@ export const getUserRentals = async (req, res) => {
 
 // CREATE: 사용자 대여 신청
 export const createRental = async (req, res) => {
-  const { item_id, count, user_id } = req.body;
-
+  const { item_id, count } = req.body;
+  const user_id = req.user._id;
+  console.log(user_id);
   try {
     // Validation
     if (!item_id || !count || !user_id) {
@@ -57,7 +57,7 @@ export const createRental = async (req, res) => {
 // UPDATE: 사용자 대여 신청 승인 (관리자)
 export const approveRental = async (req, res) => {
   const { rental_id } = req.params;
-  const { manager_id } = req.body;
+  const manager_id = req.user._id;
   try {
     if (!rental_id || !manager_id) {
       return res.status(400).send("모든 필수 입력값을 제공해야 합니다.");
@@ -76,8 +76,8 @@ export const approveRental = async (req, res) => {
 
 // DELETE: 사용자 대여 신청 취소
 export const cancelRental = async (req, res) => {
-  const { rental_id } = req.body;
-  const { _id } = req.user;
+  const { rental_id } = req.params;
+  const user_id = req.user._id;
 
   // 본인 요청인 경우에만 삭제 가능하게 하기.
   try {
@@ -89,7 +89,7 @@ export const cancelRental = async (req, res) => {
     const { create_user } = await Rental.findOne({ _id: rental_id });
 
     // console.log(_id, create_user);
-    if (create_user.equals(_id)) {
+    if (create_user.equals(user_id)) {
       await Rental.findByIdAndDelete(rental_id);
       return res
         .status(200)
@@ -105,10 +105,10 @@ export const cancelRental = async (req, res) => {
 // UPDATE: 관리자 반납 완료 처리
 export const returnRental = async (req, res) => {
   const { rental_id } = req.params;
-  const { manager_id } = req.body;
+  const manager_id = req.user._id;
 
   try {
-    if (!rental_id || !manager_id) {
+    if (!rental_id) {
       return res.status(400).send("입력이 올바르지 않습니다.");
     }
 
