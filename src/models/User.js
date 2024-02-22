@@ -22,7 +22,7 @@ userSchema.pre("save", async function () {
 });
 
 userSchema.methods.comparePassword = function (plainPassword, cb) {
-  console.log(plainPassword);
+  console.log("call comparePassword");
   bcrypt.compare(plainPassword, this.password, function (err, isMatch) {
     if (err) return cb(err);
     cb(null, isMatch);
@@ -31,11 +31,12 @@ userSchema.methods.comparePassword = function (plainPassword, cb) {
 
 // 토큰을 생성하는 메소드
 userSchema.methods.generateToken = async function (cb) {
+  console.log("call generateToken");
   const user = this;
   // jsonwebtoken을 이용해서 token을 생성하기
   const new_token = jwt.sign(user._id.toHexString(), "secretToken");
   user.token = new_token;
-  await user.save().then((err, user) => {
+  await user.save().then((user, err) => {
     if (err) return cb(err);
     cb(null, user);
   });
