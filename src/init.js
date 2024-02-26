@@ -1,5 +1,6 @@
 import "dotenv/config";
 import "./db";
+import "./models/AlertLog";
 import "./models/Item";
 import "./models/User";
 import "./models/test";

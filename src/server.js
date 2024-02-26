@@ -7,6 +7,7 @@ import rentalRouter from "./routers/rentalRouter";
 import cookieParser from "cookie-parser";
 import rootRouter from "./routers/rootRouter";
 import cors from "cors";
+import alertLogRouter from "./routers/alertLogRouter";
 const app = express();
 
 // set bodyParser
@@ -23,6 +24,7 @@ app.get("/", (req, res) => {
 // BASEURL/user로 들어온 요청은 userRouter로 전달한다.
 app.use("/", rootRouter);
 app.use("/user", userRouter);
+app.use("/alertLog", alertLogRouter);
 app.use("/rental", rentalRouter);
 app.use("/test", testRouter);
 app.use("/items", itemRouter);
