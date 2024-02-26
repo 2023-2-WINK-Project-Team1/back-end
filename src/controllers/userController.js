@@ -135,64 +135,70 @@ export const join = async (req, res) => {
 // 로그인
 export const login = async (req, res) => {
   const { user_number, password } = req.body;
-  // console.log(user_number, password);
+  console.log(user_number, password);
 
   const user = await User.findOne({ user_number });
-  // console.log(user);
 
   if (!user) {
     return res.status(400).send("존재하지 않는 계정입니다.");
   }
+
   await user.comparePassword(password, (err, isMatch) => {
     console.log(isMatch);
     if (!isMatch) {
       return res.status(400).send("잘못된 비밀번호 입니다.");
     }
+    console.log("compare");
   });
 
-  user.generateToken((err, user) => {
+  await user.generateToken((err, user) => {
+    // console.log(err, user);
     if (err) return res.status(400).send(err);
     // 토큰을 저장한다. 어디에? 쿠키, 로컬스토리지, 세션 등등
-    return res.cookie("x_auth", user.token).status(200).send("로그인 성공");
+    console.log("token");
+    return res.status(200).send({ success: true, user });
   });
 };
 
 export const logout = async (req, res, next) => {
-  const { id } = req.body;
-  console.log(id);
+  console.log("call logout");
+  const { id } = req.user;
   await User.findOneAndUpdate({ _id: id }, { token: "" }).then((user, err) => {
     if (err) return res.json({ success: false, err });
     return res.status(200).send({
       success: true,
       logout: "로그아웃 완료",
-      user,
     });
   });
 };
 
 // 사용자 인증 처리
 export const authUser = (req, res, next) => {
-  const token = req.cookies.x_auth;
-  // console.log(token);
+  console.log(req.get("Authorization"));
+  const token = req.get("Authorization");
+  console.log(token);
+  // console.log(User.findByToken(token));
   User.findByToken(token, (err, user) => {
     // console.log(err, user);
     // if (err) throw err;
-    if (!user)
-      return res.json({ isAuth: false, error: true }).send("사용자 인증 실패");
-
-    // 토큰 인증 성공시 다음 진행
-    req.token = token;
-    req.user = user;
-    next();
+    if (!user) {
+      // console.log("not found user");
+      return res.status(400).send("사용자 인증 실패, 로그인이 필요합니다.");
+    } else {
+      // 토큰 인증 성공시 다음 진행
+      req.token = token;
+      req.user = user;
+      next();
+    }
   });
 };
 
 // 관리자 인증 처리
 export const authManager = (req, res, next) => {
   // console.log("start authManager");
-  // console.log(req.cookies);
-  const token = req.cookies.x_auth;
-  // console.log(token);
+  // console.log(req);
+  const token = req.get("Authorization");
+  console.log(token);
   User.findByToken(token, (err, user) => {
     if (err) throw err;
     if (!user) {
@@ -216,18 +222,9 @@ export const authManager = (req, res, next) => {
 
 // 프로필 조회
 export const getUserProfile = async (req, res) => {
-  const userId = req.params.userId;
-
   try {
-    // 사용자 ID를 기반으로 데이터베이스에서 사용자 프로필을 조회합니다.
-    const userProfile = await User.findById(userId);
-
-    if (!userProfile) {
-      return res.status(404).send("사용자를 찾을 수 없습니다.");
-    }
-
     // 조회된 사용자 프로필을 클라이언트에게 응답합니다.
-    return res.status(200).json(userProfile);
+    return res.status(200).json(req.user);
   } catch (error) {
     console.error(error);
     return res.status(500).send("서버 오류 발생");
@@ -236,20 +233,8 @@ export const getUserProfile = async (req, res) => {
 
 // 알림 조회
 export const getUserNotifications = async (req, res) => {
-  const userId = req.params.userId;
-
   try {
-    // 사용자 ID를 기반으로 데이터베이스에서 사용자 알림을 조회합니다.
-    const userNotifications = await User.findById(userId, "notification");
-
-    if (!userNotifications) {
-      return res.status(404).send("사용자를 찾을 수 없습니다.");
-    }
-
-    // 조회된 사용자 알림을 클라이언트에게 응답합니다.
-    return res
-      .status(200)
-      .json({ notification: userNotifications.notification });
+    return res.status(200).json({ notification: req.user.notification });
   } catch (error) {
     console.error(error);
     return res.status(500).send("서버 오류 발생");
@@ -260,22 +245,15 @@ export const getUserNotifications = async (req, res) => {
 
 // 알림 설정 업데이트
 export const updateUserNotificationSetting = async (req, res) => {
-  const userId = req.params.userId;
-  const { notificationSetting } = req.body;
+  const { notification } = req.body;
 
   try {
-    // 사용자 ID를 기반으로 데이터베이스에서 해당 사용자를 찾습니다.
-    const user = await User.findById(userId);
-
-    if (!user) {
-      return res.status(404).send("사용자를 찾을 수 없습니다.");
-    }
-
-    // 사용자의 알림 설정을 업데이트합니다.
-    user.notification = notificationSetting;
+    const user = req.user;
+    console.log(user);
+    user.notification = notification;
     // 주의 표시는 mongodb 파일에 안불러와서 생깁니다.
+    console.log(user);
     await user.save();
-
     // 업데이트된 알림 설정을 클라이언트에게 응답합니다.
     return res.status(200).json({ notification: user.notification });
   } catch (error) {
