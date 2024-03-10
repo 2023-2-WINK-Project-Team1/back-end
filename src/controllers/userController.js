@@ -227,9 +227,25 @@ export const authManager = (req, res, next) => {
 };
 
 // READ
+export const getUserById = async (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    return res.status(400).send("id를 제공해야 합니다.");
+  }
 
+  try {
+    const user = await User.findById(id);
+    return res.status(200).json(user);
+  } catch (error) {
+    if (error.name === "ObjectId") {
+      return res.status(400).send("잘못된 id입니다.");
+    }
+    console.error(error);
+    return res.status(500).send("서버 오류 발생");
+  }
+};
 // 프로필 조회
-export const getUserProfile = async (req, res) => {
+export const getUserByToken = async (req, res) => {
   try {
     // 조회된 사용자 프로필을 클라이언트에게 응답합니다.
     return res.status(200).json(req.user);
