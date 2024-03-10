@@ -7,8 +7,8 @@ const userSchema = new mongoose.Schema({
   //_id: { type: String, required: true }, id 제거
   user_number: { type: String, required: true, unique: true, index: true },
   name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  email: { type: String, default: "" },
+  password: { type: String, default: "" },
   notification: { type: Boolean, default: true },
   is_manager: { type: Boolean, default: false },
   token: { type: String },

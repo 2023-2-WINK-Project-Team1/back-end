@@ -1,6 +1,7 @@
 import fs from "fs/promises";
 import csv from "csv-parser";
 import { Readable } from "stream";
+import User from "../models/User";
 
 async function readCSVFile(filePath) {
   try {
@@ -68,4 +69,47 @@ export const check_is_member = async (user_number, name) => {
     console.log("학생회비 납부자가 아닙니다.");
     return { is_member: false, is_manager: false };
   }
+};
+
+export const add_member = async (req, res) => {
+  console.log(req.body);
+  const { code } = req.body;
+  console.log(code);
+  if (code !== "가보자고") {
+    return res.status(404).send("넌 안돼");
+  }
+  const csvFilePath = __dirname + "/../resources/refined_data.csv";
+  const memberData = await readCSVFile(csvFilePath);
+
+  if (memberData) {
+    console.log("데이터 불러오기 성공");
+  } else {
+    console.log("데이터 불러오기 실패");
+    return res.status(500).send("데이터 불러오기 실패");
+  }
+  const keys = Object.keys(memberData[0]);
+  let cnt = 1000;
+  for (const member of memberData) {
+    let user_number =
+      memberData[0][keys[2]] === ""
+        ? member[keys[0]] + cnt + "1"
+        : memberData[0][keys[2]];
+    let name = member[keys[1]];
+    let is_manager = member[keys[3]] === "" ? false : true;
+    try {
+      await User.create({
+        user_number,
+        name,
+        is_manager,
+      });
+      if (is_manager) {
+        console.log("가입완료 : ", user_number, name, is_manager);
+      }
+      cnt += 1;
+    } catch (e) {
+      console.log("에러 발생 : ", e);
+    }
+  }
+
+  return res.status(200).send("success");
 };

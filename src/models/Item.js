@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const itemSchema = new mongoose.Schema({
   product_name: { type: String, required: true },
@@ -8,7 +8,7 @@ const itemSchema = new mongoose.Schema({
   //// rental -> 대여품이다. 반납 로직이 필요하다.
   //// 이 로직에 맞춰서 rental 스키마를 작성해야한다.
   count: { type: Number, default: 0 },
-  filename: { type: String, default: null },
+  imageId: { type: Schema.Types.ObjectId, default: null },
 });
 
 const Item = mongoose.model("Item", itemSchema);
