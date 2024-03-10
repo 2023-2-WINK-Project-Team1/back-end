@@ -8,7 +8,23 @@ export const getAllItems = async (req, res) => {
   try {
     const items = await Item.find();
 
-    return res.status(200).json(items);
+    if (!items) {
+      return res.status(400).json({ message: "대여 가능한 상품이 없습니다." });
+    }
+
+    const updatedItems = [];
+
+    for (const item of items) {
+      const imageId = item.imageId;
+      const image = await Image.findById(imageId);
+      const data = image.image.data;
+
+      let result = item.toObject();
+      result.image = data;
+      updatedItems.push(result);
+    }
+
+    return res.status(200).json(updatedItems);
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
