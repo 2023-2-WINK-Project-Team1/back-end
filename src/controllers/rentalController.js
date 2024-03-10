@@ -38,7 +38,7 @@ export const createRental = async (req, res) => {
 
   const user = await User.findById(user_id);
   const item = await Item.findById(item_id);
-  
+
   try {
     // Validation
     if (!item_id || !count || !user_id) {
@@ -127,7 +127,7 @@ export const cancelRental = async (req, res) => {
 export const returnRental = async (req, res) => {
   const { rental_id } = req.params;
   const manager_id = req.user._id;
-  
+
   const rental = await Rental.findById(rental_id);
   const user = await User.findById(rental.create_user);
   const item = await Item.findById(rental.item);
