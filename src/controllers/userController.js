@@ -2,7 +2,6 @@ import User from "../models/User";
 import nodemailer from "nodemailer";
 import ejs from "ejs";
 import crypto from "crypto";
-import { check_is_member } from "./memberController";
 
 let email_auth_key_dict = {};
 
@@ -92,8 +91,7 @@ export const email_auth = async (req, res) => {
 // 회원가입
 export const join = async (req, res) => {
   const { user_number, name, email, code, password, password2 } = req.body;
-  console.log(email);
-  // console.log(req.body);
+
   // 인증번호 확인
   if (email_auth_key_dict[email] != code) {
     console.log(email_auth_key_dict[email]);
@@ -111,20 +109,25 @@ export const join = async (req, res) => {
     return res.status(400).send("이미 가입한 학번/이메일 입니다.");
   }
 
-  // 학생회비 납부여부 확인
-  const { is_member, is_manager } = await check_is_member(user_number, name);
-  // console.log(is_member);
-  if (!is_member) {
-    return res.status(400).send("학생회비 납부자가 아닙니다.");
+  // 이름과 입학년도가 동일한 유저가 있는지 확인
+  const year = user_number.slice(0, 4);
+  const regex = new RegExp("^" + year); // 변수를 포함한 정규 표현식 생성
+  const result = await User.find({ name, user_number: { $regex: regex } });
+  if (!result) {
+    return res.status(500).send("학생회비 납부자가 아닙니다.");
   }
+
+  // 학생회비 납입 여부 확인
+  const user = result[0];
+  console.log(user);
   try {
-    await User.create({
-      user_number,
-      name,
-      email,
-      password,
-      is_manager,
-    });
+    // update user data
+    user.user_number = user_number;
+    user.name = name;
+    user.email = email;
+    user.password = password;
+    await user.save();
+
     return res.status(200).send("회원가입 성공");
   } catch (e) {
     console.log("에러 발생 : ", e);
@@ -199,6 +202,11 @@ export const authManager = (req, res, next) => {
   // console.log(req);
   const token = req.get("Authorization");
   console.log(token);
+
+  if (!token) {
+    return res.status(400).send("토큰이 없습니다.");
+  }
+
   User.findByToken(token, (err, user) => {
     if (err) throw err;
     if (!user) {

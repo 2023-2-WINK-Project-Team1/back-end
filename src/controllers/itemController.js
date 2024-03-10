@@ -1,6 +1,7 @@
 import Item from "../models/Item";
 import path from "path";
 import fs from "fs";
+import Image from "../models/Image";
 
 // 모든 상품 정보 가져오기
 export const getAllItems = async (req, res) => {
@@ -18,24 +19,23 @@ export const getItem = async (req, res) => {
   try {
     const { id } = req.params;
     const item = await Item.findById(id);
-    // console.log(item);
-    return res.status(200).json(item);
-  } catch (err) {
-    return res.status(500).json({ message: err.message });
-  }
-};
 
-// 상품 이미지 가져오기 (params : id)
-export const getItemImage = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const item = await Item.findById(id);
+    if (!item) {
+      return res.status(404).json({ message: "상품을 찾을 수 없습니다." });
+    }
 
-    return res
-      .status(200)
-      .sendFile(
-        path.resolve(__dirname + `/../resources/images/${item.filename}`)
-      );
+    const imageId = item.imageId;
+    const image = await Image.findById(imageId);
+
+    if (!image) {
+      return res.status(404).json({ message: "이미지를 찾을 수 없습니다." });
+    }
+    const data = image.image.data;
+    const result = item.toObject();
+
+    result.image = data;
+
+    return res.status(200).json(result);
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
@@ -83,16 +83,16 @@ export const deleteItem = async (req, res) => {
 // 상품 추가하기
 export const addItem = async (req, res) => {
   const allowedTypes = ["expandable", "rental"];
-  console.log(req.body);
+  const imageId = req.body.imageId;
 
-  const { product_name, type, count, filename } = req.body;
+  const { product_name, type, count } = req.body;
   if (!allowedTypes.includes(type)) {
     return res
       .status(400)
       .send("type 속성은 'expandable', 'rental' 중 하나여야합니다.");
   }
   try {
-    await Item.create({ product_name, type, count, filename });
+    await Item.create({ product_name, type, count, imageId });
     return res.status(200).send("상품 추가 완료");
   } catch (err) {
     console.log(err);

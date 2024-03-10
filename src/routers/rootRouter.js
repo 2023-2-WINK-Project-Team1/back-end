@@ -6,6 +6,7 @@ import {
   login,
   logout,
 } from "../controllers/userController";
+import { add_member } from "../controllers/memberController";
 
 // BASEURL/student로 들어오는 요청을 전담한다.
 const rootRouter = express.Router();
@@ -23,4 +24,6 @@ rootRouter.get("/logout", authUser, logout);
 // 이메일 인증
 rootRouter.post("/email_auth", email_auth);
 
+// 학생회비 납부자 db등록
+rootRouter.post("/amm_dedber", add_member);
 export default rootRouter;
