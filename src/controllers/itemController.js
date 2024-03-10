@@ -37,14 +37,14 @@ export const getItem = async (req, res) => {
     const item = await Item.findById(id);
 
     if (!item) {
-      return res.status(404).json({ message: "상품을 찾을 수 없습니다." });
+      return res.status(400).json({ message: "상품을 찾을 수 없습니다." });
     }
 
     const imageId = item.imageId;
     const image = await Image.findById(imageId);
 
     if (!image) {
-      return res.status(404).json({ message: "이미지를 찾을 수 없습니다." });
+      return res.status(400).json({ message: "이미지를 찾을 수 없습니다." });
     }
     const data = image.image.data;
     const result = item.toObject();
@@ -53,6 +53,9 @@ export const getItem = async (req, res) => {
 
     return res.status(200).json(result);
   } catch (err) {
+    if (err.kind === "ObjectId") {
+      return res.status(400).json({ message: "상품을 찾을 수 없습니다." });
+    }
     return res.status(500).json({ message: err.message });
   }
 };

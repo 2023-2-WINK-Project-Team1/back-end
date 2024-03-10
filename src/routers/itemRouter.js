@@ -6,7 +6,6 @@ import {
   deleteItem,
   getAllItems,
   getItem,
-  getItemImage,
 } from "../controllers/itemController";
 import { authManager } from "../controllers/userController";
 import Image from "../models/Image";
