@@ -31,6 +31,7 @@ router.post(
   authManager,
   upload.single("item_image"),
   async (req, res, next) => {
+    console.log(req);
     if (!req.file) {
       console.error("Error: No file uploaded");
       return res.status(400).send("No file uploaded");
