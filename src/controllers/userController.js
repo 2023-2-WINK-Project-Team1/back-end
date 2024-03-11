@@ -244,6 +244,7 @@ export const getUserById = async (req, res) => {
     return res.status(500).send("서버 오류 발생");
   }
 };
+
 // 프로필 조회
 export const getUserByToken = async (req, res) => {
   try {
