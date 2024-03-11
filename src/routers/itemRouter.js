@@ -31,25 +31,35 @@ router.post(
   authManager,
   upload.single("item_image"),
   async (req, res, next) => {
-    console.log(req.file.buffer);
-    const buffer = await sharp(req.file.buffer).resize(200, 200).toBuffer();
-    console.log(buffer);
-    const image = new Image({
-      image: {
-        data: buffer,
-        contentType: req.file.mimetype,
-      },
-    });
-    await image.save();
-    console.log("success to save image");
-    // res.send("success");
-    console.log(image._id);
-    if (!image._id) {
-      return res.status(400).send("이미지 저장에 실패했습니다.");
+    if (!req.file) {
+      console.error("Error: No file uploaded");
+      return res.status(400).send("No file uploaded");
     }
 
-    req.body.imageId = image._id;
-    next();
+    try {
+      const buffer = await sharp(req.file.buffer).resize(200, 200).toBuffer();
+      console.log(buffer);
+      const image = new Image({
+        image: {
+          data: buffer,
+          contentType: req.file.mimetype,
+        },
+      });
+      await image.save();
+      console.log("success to save image");
+      // res.send("success");
+      console.log(image._id);
+
+      if (!image._id) {
+        return res.status(400).send("이미지 저장에 실패했습니다.");
+      }
+
+      req.body.imageId = image._id;
+      next();
+    } catch (error) {
+      console.error(error);
+      return res.status(500).send("내부 서버 오류");
+    }
   },
   addItem
 );
