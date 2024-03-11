@@ -9,6 +9,7 @@ import {
 } from "../controllers/itemController";
 import { authManager } from "../controllers/userController";
 import Image from "../models/Image";
+import sharp from "sharp";
 
 const router = express.Router();
 
@@ -30,9 +31,13 @@ router.post(
   authManager,
   upload.single("item_image"),
   async (req, res, next) => {
+    const buffer = await sharp(req.file.buffer)
+      .resize(200, 200)
+      .png()
+      .toBuffer();
     const image = new Image({
       image: {
-        data: req.file.buffer,
+        data: buffer,
         contentType: req.file.mimetype,
       },
     });
