@@ -31,10 +31,9 @@ router.post(
   authManager,
   upload.single("item_image"),
   async (req, res, next) => {
-    const buffer = await sharp(req.file.buffer)
-      .resize(200, 200)
-      .png()
-      .toBuffer();
+    console.log(req.file.buffer);
+    const buffer = await sharp(req.file.buffer).resize(200, 200).toBuffer();
+    console.log(buffer);
     const image = new Image({
       image: {
         data: buffer,
