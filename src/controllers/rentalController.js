@@ -45,6 +45,18 @@ export const createRental = async (req, res) => {
       return res.status(400).send("모든 필수 입력값을 제공해야 합니다.");
     }
 
+    let rentalCount = 0;
+    await Rental.find({ item: item_id, approved: null }).then((rentals) => {
+      rentals.forEach((rental) => {
+        rentalCount += Number(rental.count);
+      });
+    });
+
+    // 대여 가능한 수량인지 확인  (대여 가능 수량 > 대여 신청 수량)
+    if (item.count - rentalCount < count) {
+      return res.status(400).send("대여 가능한 수량을 초과하였습니다.");
+    }
+
     await Rental.create({
       create_user: user_id,
       item: item_id,
@@ -78,9 +90,18 @@ export const approveRental = async (req, res) => {
     const rental = await Rental.findById(rental_id);
     const user = await User.findById(rental.create_user);
     const item = await Item.findById(rental.item);
+
+    if (rental.approved) {
+      return res.status(400).send("이미 승인된 대여 신청입니다.");
+    }
+
     await Rental.findByIdAndUpdate(rental_id, {
       approved_manager: manager_id,
       approved: new Date(),
+    });
+
+    await Item.findByIdAndUpdate(rental.item, {
+      count: item.count - rental.count,
     });
 
     // 생성할 알림 로그의 메시지를 생성합니다.
@@ -107,8 +128,14 @@ export const cancelRental = async (req, res) => {
         .status(400)
         .send("삭제할 대여 내역의 id를 올바르게 입력해주세요");
     }
-    const { create_user } = await Rental.findOne({ _id: rental_id });
+    const rental = await Rental.findOne({ _id: rental_id });
+    const create_user = rental.create_user;
 
+    if (rental.approved) {
+      return res
+        .status(400)
+        .send("이미 승인된 대여 신청입니다. 취소할 수 없습니다.");
+    }
     // console.log(_id, create_user);
     if (create_user.equals(user_id)) {
       await Rental.findByIdAndDelete(rental_id);
@@ -129,6 +156,9 @@ export const returnRental = async (req, res) => {
   const manager_id = req.user._id;
 
   const rental = await Rental.findById(rental_id);
+  if (!rental) {
+    return res.status(400).send("대여 내역을 찾을 수 없습니다.");
+  }
   const user = await User.findById(rental.create_user);
   const item = await Item.findById(rental.item);
 
@@ -136,6 +166,21 @@ export const returnRental = async (req, res) => {
     if (!rental_id) {
       return res.status(400).send("입력이 올바르지 않습니다.");
     }
+
+    console.log(item.type);
+    if (item.type !== "rental") {
+      return res
+        .status(400)
+        .send("대여 상품이 아닙니다. (반납이 필요하지 않습니다.)");
+    }
+
+    if (rental.returned) {
+      return res.status(400).send("이미 반납된 대여 내역입니다.");
+    }
+
+    await Item.findByIdAndUpdate(rental.item, {
+      count: item.count + Number(rental.count),
+    });
 
     // Use findByIdAndUpdate to update the rental document
     await Rental.findByIdAndUpdate(rental_id, {
