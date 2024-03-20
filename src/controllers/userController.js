@@ -146,21 +146,28 @@ export const login = async (req, res) => {
     return res.status(400).send("존재하지 않는 계정입니다.");
   }
 
-  await user.comparePassword(password, (err, isMatch) => {
-    console.log(isMatch);
-    if (!isMatch) {
-      return res.status(400).send("잘못된 비밀번호 입니다.");
-    }
-    console.log("compare");
-  });
+  try {
+    await new Promise((resolve, reject) => {
+      user.comparePassword(password, (err, isMatch) => {
+        if (err) reject(err);
+        if (!isMatch) {
+          reject("잘못된 비밀번호 입니다.");
+        }
+        resolve();
+      });
+    });
 
-  await user.generateToken((err, user) => {
-    // console.log(err, user);
-    if (err) return res.status(400).send(err);
-    // 토큰을 저장한다. 어디에? 쿠키, 로컬스토리지, 세션 등등
-    console.log("token");
+    await new Promise((resolve, reject) => {
+      user.generateToken((err, user) => {
+        if (err) reject(err);
+        resolve(user);
+      }); // 토큰 생성
+    });
+
     return res.status(200).send({ success: true, user });
-  });
+  } catch (err) {
+    return res.status(400).send(err instanceof Error ? err.message : err);
+  }
 };
 
 export const logout = async (req, res, next) => {
