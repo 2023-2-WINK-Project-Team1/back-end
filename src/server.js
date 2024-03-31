@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import rootRouter from "./routers/rootRouter";
 import cors from "cors";
 import alertLogRouter from "./routers/alertLogRouter";
+import paymentRouter from "./routers/paymentRouter";
 const app = express();
 
 // set bodyParser
@@ -28,5 +29,6 @@ app.use("/alertLog", alertLogRouter);
 app.use("/rental", rentalRouter);
 app.use("/test", testRouter);
 app.use("/items", itemRouter);
+app.use("/payment", paymentRouter);
 
 export default app;
