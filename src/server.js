@@ -10,11 +10,30 @@ import cors from "cors";
 import alertLogRouter from "./routers/alertLogRouter";
 const app = express();
 
+// set cors
+const whitelist = [
+  "http://localhost:8080",
+  "http://localhost:3000",
+  "http://bililge.s3-website.ap-northeast-2.amazonaws.com/",
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      // 만일 whitelist 배열에 origin인자가 있을 경우
+      callback(null, true); // cors 허용
+    } else {
+      callback(new Error("Not Allowed Origin!")); // cors 비허용
+    }
+  },
+};
+
+app.use(cors(corsOptions)); // 옵션을 추가한 CORS 미들웨어 추가
+
 // set bodyParser
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: false }));
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(cookieParser());
-app.use(cors());
 
 app.get("/", (req, res) => {
   console.log("home");
