@@ -16,6 +16,7 @@ const whitelist = [
   "http://localhost:8080",
   "http://localhost:3000",
   "http://bililge.s3-website.ap-northeast-2.amazonaws.com/",
+  "http://2024-01-webclient.s3-website.ap-northeast-2.amazonaws.com/",
 ];
 
 const corsOptions = {
