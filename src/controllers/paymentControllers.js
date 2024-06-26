@@ -82,7 +82,7 @@ export const getPayment = async (req, res) => {
       .limit(size);
 
     // return 값 만들기
-    const totalDataCnt = await User.countDocuments();
+    const totalDataCnt = data.length;
     const totalPages = Math.ceil(totalDataCnt / size);
     const isLastPage = page === totalPages;
     const isFirstPage = page === 1;
